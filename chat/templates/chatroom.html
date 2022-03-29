@@ -1,0 +1,155 @@
+{% extends 'chat_base.html' %}
+{% block menu %}
+    <div class="">
+        {% for i in request.user.chatroom_set.all %}
+            {% for j in i.user.all %}
+                {% if j != request.user %}
+                    <a style="text-decoration:none" href="{% url 'chat' j.pk %}">
+                        <div class=" d-flex rounded justify-content-start align-items-center bg-secondary my-1 text-white ">
+
+                            {% if j.profile.profilepicture %}
+                                <img src="{{ j.profile.profilepicture.url }}" style="width: 50px;clip-path: circle()"
+                                     class="img-responsive my-1 mx-2 rounded-circle img-fluid ">
+                            {% endif %}
+
+                            <div class="justify-content-center align-items-center">
+                                <b class="mx-2 ">{{ j.username }}</b>
+
+                                {#                                {% for j in i.chat_set.all|dictsortreversed:"timestamp"|slice:":1" %}#}
+                                {#                                    {{ j.content }}{% endfor %}#}
+                                {% if i.notification == True %}
+                                    <small style="text-overflow: ellipsis;"
+                                           class=" bg-light px-3 border-light rounded-pill text-muted">
+                                        {% if i.last ==  request.user.username %}
+                                            unread
+                                        {% else %}
+                                            Newmessage
+                                        {% endif %}
+                                    </small>
+                                {% endif %}
+
+                            </div>
+
+
+                        </div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+
+    </div>
+{% endblock %}
+{% block content %}
+
+    <div style="max-height:620px;" class="card ">
+
+        <div class="bg-info  text-white col-12 card-header">
+            <img src="{{ chatsuser.profile.profilepicture.url }}"
+                 style="width: 50px; height: 50px;clip-path: circle();"
+                 class="img-responsive rounded-circle img-fluid ">
+
+            {{ chatsuser.username }}</div>
+
+        <div id="chat-text" class="overflow-auto card-body">
+            <div class="justify-content-center align-items-center">
+                <img src="{{ chatsuser.profile.profilepicture.url }}"
+                     style="max-height:60px; max-width:60px; clip-path: circle();"
+                     class="img-responsive rounded-circle img-fluid d-block m-auto">
+                <p class="text-center text-muted">{{ chatsuser.username }}</p>
+            </div>
+
+            {% for chat in chats %}
+                {% if chat.user.id == request.user.id %}
+
+                    <div class="d-flex text-wrap justify-content-end align-items-end">
+
+                        <p style="word-wrap:break-word;max-width:50%;"
+                           class="chat text-wrap rounded  px-2 py-1 bg-primary text-white justify-content-center align-items-end">{{ chat.content }}</p>
+
+                    </div>
+
+
+                {% else %}
+
+                    <div class=" d-flex justify-content-start align-items-start">
+                        <img src="{{ chat.user.profile.profilepicture.url }}"
+                             style="max-width: 40px; max-height: 40px;clip-path: circle();"
+                             class="img-fluid img-responsive rounded-circle  py-1">
+                        <p style="word-wrap: break-word;max-width:50%;"
+                           class="text-wrap  rounded  px-2 py-1 bg-info text-white justify-content-center align-items-start">{{ chat.content }}</p>
+{#                        <p style="font-size:10px;" class="text-muted">{{ chat.timestamp|timesince }}</p>#}
+                    </div>
+
+                {% endif %}
+            {% endfor %}
+
+        </div>
+        <br>
+
+
+        <div class="card-footer">
+            <form class="d-flex justify-content-center align-items-end ">
+
+                <div class="form-group col-10">
+                    <input class="form-control" id="input" autocomplete="off" type="text">
+                </div>
+                <input class="btn btn-secondary ms-1 " id="submit" type="button" value="Send">
+            </form>
+        </div>
+
+    </div>
+
+
+
+
+    {{ request.user.username|json_script:"user_username" }}
+    {{ room_name|json_script:"room-name" }}
+{% endblock %}
+{% block aside %}
+{% endblock %}
+{% block script %}
+
+
+    const user_username = JSON.parse(document.getElementById('user_username').textContent);
+    document.querySelector('#submit').onclick = function (e) {
+    const messageInputDom = document.querySelector('#input');
+    const message = messageInputDom.value;
+    chatSocket.send(JSON.stringify({
+    'message': message,
+    'username': user_username,
+    }));
+    messageInputDom.value = '';
+    };
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+    const chatSocket = new WebSocket(
+    'ws://' +
+    window.location.host +
+    '/ws/chat/' +
+    roomName +
+    '/'
+    );
+
+    chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    console.log(data)
+    document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
+    var message=document.querySelector('#chat-text')
+    message.innerHTML += ('<p>'+data.username + ': ' + data.message + '</p>'+'\n')
+    message.style.color="red"
+    }
+
+{#    var textbox=document.querySelector("#chat-text")#}
+{#    var m=document.querySelectorAll(".chat")#}
+{#    function remove(){#}
+{#        #}
+{#    }#}
+{#    function remove(){#}
+{##}
+{#        var textbox=document.querySelector("#chat-text")#}
+{#        textbox.removeChild(m)#}
+{#    }#}
+
+{% endblock %}
+

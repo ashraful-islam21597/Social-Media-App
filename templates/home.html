@@ -1,0 +1,561 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cloudinary %}
+{% load crispy_forms_tags %}
+{% block menu %}
+    <br>
+    <!-- menu navbar start -->
+    <div class="other-section">
+        <!-- navar -->
+        <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+            <li class="nav-item">
+                <a data-bs-toggle="tab" class="nav-link active" href="#home">About</a>
+            </li>
+            <li class="nav-item ">
+                <a data-bs-toggle="tab" class="nav-link" href="#contact">Contact</a>
+            </li>
+            <li class="nav-item ">
+                <a data-bs-toggle="tab" class="nav-link" href="#address">Address</a>
+            </li>
+
+        </ul>
+        <!-- navbar end -->
+
+        <!-- menu navbar content start-->
+        <div class="tab-content bg-white p-3 " id="nav-tabContent">
+            <!-- about start -->
+            <div id="home" class="tab-pane active text-dark">
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Education</h5>
+                </div>
+                <blockquote class="text-center text-dark text-justify text-muted">
+                    {% if gs.Graduate_school_name != None %}
+                        {% if  gs.end < gs.current_date %}Studied at {% else %} Studies
+                            at {% endif %}{{ gs.Graduate_school_name }}
+                        <br>
+                        {% if object.user == request.user %}<a href="{% url 'edit_graduate_schhol' gs.pk %}">edit</a>
+                        {% endif %}
+
+                    {% else %}
+                        {% if object.user == request.user %}
+                            <a href="{% url 'edit_graduate_schhol' gs.pk %}">add University</a>{% endif %}
+
+                    {% endif %}
+
+                    <br>
+                    {% if cl.college != None %}
+                        {% if  cl.end < cl.current_date %}Studied at {% else %} Studies at {% endif %}{{ cl.college }}
+                        <br>
+                        {% if object.user == request.user %}<a href="{% url 'edit_college' cl.pk %}">edit</a>{% endif %}
+
+                    {% else %}
+                        {% if object.user == request.user %} <a href="{% url 'edit_college' cl.pk %}">add college</a>
+                        {% endif %}
+
+                    {% endif %}
+                    <br>
+                    {% if s.school != None %}
+                        {% if  s.end < s.current_date %}Studied at {% else %} Studies at {% endif %}{{ s.school }}
+                        <br>
+                        {% if object.user == request.user %}<a href="{% url 'edit_school' s.pk %}">edit</a>{% endif %}
+
+                    {% else %}
+                        {% if object.user == request.user %}<a href="{% url 'edit_school' s.pk %}">add school</a>
+                        {% endif %}
+
+                    {% endif %}
+                </blockquote>
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">profession</h5>
+                </div>
+                <blockquote class="text-center text-dark text-justify text-muted">
+                    {% if job.profession != None %}
+
+                        works at {{ job.company }} as a {{ job.profession }}
+                        {% if object.user == request.user %}
+                            <a href="{% url 'edit_proffession' job.pk %}">edit</a>
+                        {% endif %}
+                    {% else %}
+                        {% if object.user == request.user %}
+                            <a href="{% url 'edit_proffession' job.pk %}">add proffession</a>{% endif %}
+
+                    {% endif %}
+
+                </blockquote>
+            </div>
+
+
+            <!-- about start -->
+
+            <!-- contact start -->
+            <div id="contact" class="text-center tab-pane fade text-dark">
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Contact</h5>
+                </div>
+
+                {% if object.contact %}
+                    <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top"
+                            title="{{ object.contact }}">
+                        <i style="font-size:15px" class="fa">&#xf095;</i>
+                        {#                    <i class="fa-brands fa-whatsapp"></i>#}
+                    </button>
+                    {#                <p class="text-muted "><i style="font-size:15px" class="fa">&#xf095;</i> : {{ object.contact }}</p>#}
+
+                {% endif %}
+                {% if object.user.email %}
+                    <button type="button" class="btn btn-outline-danger" data-toggle="tooltip" data-placement="top"
+                            title="{{ object.user.email }}">
+                        <i class="fa-regular fa-envelope"></i>
+                        {#                    <i class="fa-brands fa-whatsapp"></i>#}
+                    </button>
+
+                    {#                    <p class="text-muted"><i style="font-size:15px" class="fa">&#xf0e0;</i> : {{ object.user.email }}</p>#}
+
+                {% endif %}
+                <br>
+                {% if object.user == request.user %} <a href="{% url 'edit_profile' object.pk %}">edit</a>{% endif %}
+
+
+
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Social Link</h5>
+                </div>
+                {% if link.Facebook %}
+                    <a style="text-decoration: none;" class="btn btn-outline-primary   m-1 font-weight-bold"
+                       href="{{ link.Facebook }}"><i class="fa-brands fa-facebook-square"></i></a>
+                {% endif %}
+                {% if link.Instragram %}
+                    <a style="text-decoration: none;" class="btn btn-outline-danger   m-1 font-weight-bold"
+                       href="{{ link.Instragram }}"><i style="" class="fab fa-instagram"></i></a>
+                {% endif %}
+                {% if link.Linkedin %}
+                    <a style="text-decoration: none;" class="btn btn-outline-primary m-1 font-weight-bold"
+                       href="{{ link.Linkedin }}"><i class="fab fa-linkedin-in"></i></a>
+                {% endif %}
+                {% if link.Twitter %}
+                    <a style="text-decoration: none;" class="btn btn-outline-secondary m-1  font-weight-bold"
+                       href="{{ link.Twitter }}"><i class="fa-brands fa-twitter"></i></a>
+                {% endif %}
+                {% if link.Github %}
+                    <a style="text-decoration: none;" class="btn btn-outline-dark m-1  font-weight-bold"
+                       href="{{ link.Github }}"><i class="fa-brands fa-github"></i></a>
+                {% endif %}
+                <br>
+                {% if object.user == request.user %}
+                    <a href="{% url 'edit_link' link.pk %}">edit</a>
+                {% endif %}
+
+
+            </div>
+            <!-- contact end -->
+
+            <!-- address start -->
+            <div id="address" class="tab-pane fade  text-dark">
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Home Address</h5>
+                </div>
+                <blockquote class="text-center text-dark text-justify text-muted">
+                    {% if object.address %}
+                        <p><i style="color:cornflowerblue;"
+                              class="fa-solid fa-location-dot mx-1"></i>{{ object.address }}</p>
+                    {% endif %}
+
+                </blockquote>
+
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Permanant Address</h5>
+                </div>
+                <blockquote class="text-center text-dark text-justify text-muted">
+
+                    {% if object.Home %}
+                        <p><i style="color:cornflowerblue;" class="fa-solid fa-location-dot mx-1"></i>{{ object.Home }}
+                        </p>
+                    {% endif %}
+                    {% if request.user %}
+                        <a href="{% url 'edit_address' object.pk %}"> add or edit</a>
+                    {% endif %}
+
+
+                </blockquote>
+
+
+            </div>
+        </div>
+        <!-- address end -->
+
+    </div>
+    <!-- menu navbar content end-->
+
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <!-- status card body start -->
+        <div class=" border rounded border-light bg-light card-body">
+            <div class="d-lg-flex  justify-content-start align-items-center">
+
+
+                {% if object.profilepicture %}
+                    {% cloudinary object.profilepicture format="jpg" width=1000 height=1000 crop="fill" style="float:left;height:7%;width:7%; clip-path: circle();" class="img-responsive mx-2  rounded-circle col-lg-2 img-fluid" %}
+
+{#                    <img style="float:left;height:7%;width:7%; clip-path: circle();" class="img-responsive mx-2  rounded-circle col-lg-2 img-fluid" src="{{ request.user.profile.profilepicture.url }}">#}
+                {% else %}
+
+{#                    {% cloudinary object.profilepicture format="jpg" width=1000 height=1000 crop="fill" style="float:left;height:7%;width:7%; clip-path: circle();" class="img-responsive mx-2  rounded-circle col-lg-2 img-fluid" %}#}
+
+                                        <img style="max-width:50px;max-height: 50px;"  class="img-responsive mx-2 rounded-circle col-lg-2 img-fluid" src="{% static 'image/no_pic.png' %}">
+{#                    <i style="font-size: 50px; color: blue;" class="fa-solid fa-user">fdgd</i>#}
+                {% endif %}
+                <!-- status form start -->
+                {#            <div class="modal fade" tabindex="-1" role="dialog" id="modal">#}
+                {#                <div class="modal-dialog" role="document">#}
+                {#                    <div class="modal-content"></div>#}
+                {#                </div>#}
+                {#            </div>#}
+
+                <!-- Create book button -->
+                <a href="{% url 'create_status' %}"
+                   class="border rounded-pill border-primary btn text-primary d-flex col-lg-11">write
+                    or post</a>
+            </div>
+            {#            <form class="d-flex search-form col-lg-11" data-bs-toggle="modal" data-bs-target="#exampleModal">#}
+            {#               <input class="form-control me-2 " id="create-status"  type="search" placeholder="write or upload" aria-label="Search">#}
+            {#            </form>#}
+            <hr>
+            <div class="d-flex">
+                <a href="{% url 'create_status' %}" class=" rounded-pill me-1 btn btn-outline-primary col-6">Add
+                    Photo</a>
+                <a href="{% url 'create_status' %}" class="rounded-pill ms-1 btn btn-outline-primary col-6">Add
+                    video</a>
+            </div>
+            <!-- status form end -->
+
+            <!-- modal start -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <!-- modal content -->
+                    <div class="modal-content">
+                        <!-- modal header -->
+                        <div class="modal-header">
+                            <!-- icon image -->
+                            {% if request.user.profile.profilepicture %}
+                                <img class="rounded-circle me-2 img-responsive"
+                                     src="{{ request.user.profile.profilepicture.url }}"
+                                     style="height:30px;width:30px ;clip-path: circle(); ">
+                            {% endif %}
+                            <!-- icon brand -->
+                            <span class="text-dark">Ashraful Islam</span>
+                            <!-- cross button -->
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <!-- modal header end -->
+                        <!-- status form in modal -->
+                        <form method="post" id="add_status" enctype="multipart/form-data" class="col-lg-12">
+                            {% csrf_token %}
+                            <div class="modal-body">
+
+                            </div>
+                            <!-- modal footer start  -->
+                            <div class="modal-footer">
+                                <button type="submit" name="post_status" class="d-block m-auto btn btn-primary col-12"
+                                        data-bs-dismiss="modal">Submit
+                                </button>
+                            </div>
+                            <!-- modal footer end -->
+                        </form>
+                        <!-- form end -->
+                    </div>
+                    <!--  modal content start -->
+                </div>
+            </div>
+            <!-- modal end -->
+        </div>
+        <!-- status card body end -->
+    </div>
+    <hr>
+    {#status#}
+    {% for s in newsfeed %}
+        <div class="card my-2">
+            <!-- card header start -->
+            <div class="card header ">
+                <div class="d-flex justify-content-start align-items-center p-1">
+                    <!-- icon -->
+                    {% if s.user.profile.profilepicture %}
+
+
+                        <img style="float:left;height:7%;width:7%; clip-path: circle();"
+                             class="img-responsive mx-2 mt-1 rounded-circle col-lg-2 img-fluid"
+                             src="{{ s.user.profile.profilepicture.url }}">
+                    {% else %}
+                    <img style="float:left;height:7%;width:7%; clip-path: circle();" class="img-responsive mx-2 mt-1 rounded-circle col-lg-2 img-fluid" src="{% static 'image/no_pic.png' %}">
+                        <!-- icon brand -->
+                    {% endif %}
+                    <div>
+                        <a style="text-decoration: none"
+                           href="{{ s.user.profile.get_absolute_url }}">{{ s.user.username }}</a>
+
+                        <small class="d-block text-muted text-dark">{{ s.created_at|timesince }}</small>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-body">
+                <p> {{ s.status }}
+                </p>
+                {% if s.post_image %}
+{#                    <img src="{{ s.post_image.url }}" class=" d-block  m-auto img-fluid post-img">#}
+                    {% cloudinary s.post_image format="jpg"  fill="crop" class=" d-block  m-auto img-fluid post-img"%}
+                {% endif %}
+            </div>
+            <!-- card body end -->
+            <!-- card footer start -->
+            <div class="bg-white card-footer">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row p-0">
+                        <div class="col-6">
+                            <a href="{% url 'react' s.pk %}"
+                               class="rounded-pill me-1 btn btn-light col-12
+
+
+                                       {% for j in s.post_reaction_set.all %}{% for k in j.reaction_set.all %}{% if k.user == request.user %}text-primary{% else %}text-dark{% endif %}{% endfor %}{% endfor %}">
+                                {% for k in s.post_reaction_set.all %}{{ k.total_react }} {% endfor %}
+                                <i style="font-size: 20px;" class="fa fa-thin fa-thumbs-up"></i>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            {#                            <a class="rounded-pill me-1 btn btn-light col-12"#}
+                            {#                                    data-bs-toggle="modal" data-bs-target="#commentModal">comment#}
+                            {#                            </a>#}
+                            <a href="{% url 'create_comment' s.pk %}" class="rounded-pill me-1 btn btn-light col-12">
+                                <i style="font-size: 20px;" class="text-muted fa-solid fa-envelope"></i>
+                            </a>
+                        </div>
+{#                        <div class="col-4">#}
+{#                            <button class="rounded-pillme-1 btn btn-light col-12"#}
+{#                                    data-bs-toggle="modal" data-bs-target="#statusModal"><i style="font-size: 15px;"#}
+{#                                                                                            class="text-muted fa-solid fa-share"></i>#}
+{#                            </button>#}
+{#                        </div>#}
+                    </div>
+                </form>
+            </div>
+            <!-- card footer end -->
+
+        </div>
+
+
+
+
+    {% endfor %}
+
+
+    <!-- card sample 1 end -->
+
+    <!-- users status card with image -->
+
+
+    <!-- react modal start -->
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <!-- modal content -->
+            <div class="modal-content">
+                <!-- modal header -->
+                <div class="modal-header">
+                    <!-- icon image -->
+                    <img class="rounded-circle me-2" src="flip.jpg" style="height:30px;width:30px " alt="logo">
+                    <!-- icon brand -->
+                    <span class="text-dark">Ashraful Islam</span>
+                    <!-- cross button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- modal header end -->
+
+
+                <!--  modal body start -->
+                <div class="modal-body">
+                    <!-- <input class="form-control"  type="text" placeholder="Write status"> -->
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                        the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
+                        of type and scrambled it to make a type specimen book.</p>
+                </div>
+                <!-- modal body end -->
+
+                <!-- modal footer start  -->
+                <div class="modal-footer">
+                    <button type="button" style="font-size:30px; color:blue;"
+                            class="fas fa-thumbs-up d-block m-auto p-0 btn btn-light col-3"
+                            data-bs-dismiss="modal"></button>
+                    <button type="button" style="font-size:30px; color:red;"
+                            class="fas fa-thumbs-down d-block m-auto p-0 btn btn-light col-3"
+                            data-bs-dismiss="modal"></button>
+                    <button type="button" style="font-size:30px; color:green;"
+                            class="far fa-grin-squint-tears d-block m-auto p-0 btn btn-light col-3"
+                            data-bs-dismiss="modal"></button>
+
+                </div>
+                <!--react modal footer end -->
+            </div>
+            <!--react  modal content start -->
+        </div>
+    </div>
+    <!-- react modal end -->
+
+    <!-- comment modal start -->
+    <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <!-- modal content -->
+            <div class="modal-content">
+                <!-- modal header -->
+                <div class="modal-header">
+                    <!-- icon image -->
+                    <img class="rounded-circle me-2" src="flip.jpg" style="height:30px;width:30px " alt="logo">
+                    <!-- icon brand -->
+                    <span class="text-dark">Ashraful Islam</span>
+                    <!-- cross button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- modal header end -->
+
+
+                <!--  modal body start -->
+                <div class="modal-body">
+                    <!-- <input class="form-control"  type="text" placeholder="Write status"> -->
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                        the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
+                        of type and scrambled it to make a type specimen book.</p>
+                </div>
+                <!-- modal body end -->
+
+                <!-- modal footer start  -->
+                <div class="modal-footer">
+
+                    <div class="border rounded border-light bg-light card-body">
+                        <div class=" my-2">
+                            <img style="float:left;height:6%;width:6%;"
+                                 class="mx-2 mt-3 rounded-circle col-lg-2 img-fluid" src="flip.jpg">
+
+                            <div class="comment-style  p-2 my-2 d-flex col-lg-10">
+                                <p class="d-block">
+                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                                </p>
+                            </div>
+
+                            <a class="ms-5" href="#demo" data-bs-toggle="collapse">replies</a>
+
+                            <div id="demo" class="collapse">
+                                <div class=" ms-5">
+                                    <img style="float:left;height:6%;width:6%;"
+                                         class="mx-2 mt-3 rounded-circle col-lg-2 img-fluid" src="flip.jpg">
+                                    <!-- status form start -->
+                                    <div class="comment-style  p-2 my-2 d-flex col-lg-10">
+                                        <p class="d-block">
+                                            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class=" ms-5">
+                                    <img style="float:left;height:6%;width:6%;"
+                                         class="mx-2 mt-3 rounded-circle col-lg-2 img-fluid" src="flip.jpg">
+                                    <!-- status form start -->
+                                    <div class="comment-style  p-2 my-2 d-flex col-lg-10">
+                                        <p class="d-block">
+                                            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card">
+                        <div class="border rounded border-light bg-light card-body">
+                            <img style="float:left;height:6%;width:6%;"
+                                 class="mx-2 mt-1 rounded-circle col-lg-2 img-fluid" src="flip.jpg">
+                            <!-- status form start -->
+                            {#                            <a href="{% url 'create_status' %}" class="btn btn-outline-primary d-flex col-lg-10">write or post</a>#}
+                            <form class="d-flex col-lg-10">
+                                <textarea class="comment_textarea form-control me-2" placeholder="Write comment "
+                                          id="exampleFormControlTextarea1" rows="1"></textarea>
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">comment
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!--comment modal footer end -->
+            </div>
+            <!--comment  modal content start -->
+        </div>
+    </div>
+{% endblock %}
+{% block aside %}
+    {#    <div class="dropdown-container">#}
+    {#        <a href="#">Contact</a>#}
+    {#        <div class="dropdown-content">#}
+    {#            <a href="#">Facebook</a>#}
+    {#            <a href="#">Gmail</a>#}
+    {#        </div>#}
+    {#    </div>#}
+
+
+    {% for f in friends %}
+
+        <div style=""
+             class="dropdown-container fs ms-2 rounded-left my-1 d-lg-flex d-sm-block  justify-content-start align-items-center  col-lg-12 col-sm-2">
+
+            {% if f.profile.profilepicture %}
+                <a class="dropdown" href="#" data-bs-toggle="dropdown"><img src="{{ f.profile.profilepicture.url }}"
+                                                                            class=" border border-white rounded-circle img-fluid chat_img"></a>
+                <div class="dropdown-menu">
+                    <img src="{{ f.profile.profilepicture.url }}"
+                         class=" border border-white rounded-circle img-fluid chat_img">
+                    <span class="mx-2"><a href="{% url 'profile' f.pk %}"
+                                          class="text-decoration-none">{{ f.username }}</a></span>
+                </div>
+                <span class="mx-2"><a href="{% url 'chat' f.pk %}"
+                                      class="text-decoration-none">{{ f.username }}</a></span>
+            {% else %}
+                <span class="mx-2"><a href="{% url 'chat' f.pk %}"
+                                      class="text-decoration-none">{{ f.username }}</a></span>
+            {% endif %}
+
+
+        </div>
+        {#                <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown">  Hover me  </a>#}
+        {#                <ul class="dropdown-menu">#}
+        {#                    <li><a class="dropdown-item" href="#"> Submenu item 1</a></li>#}
+        {#                    <li><a class="dropdown-item" href="#"> Submenu item 2 </a></li>#}
+        {#                    <li><a class="dropdown-item" href="#"> Submenu item 3 </a></li>#}
+        {#                </ul>#}
+
+
+
+    {% endfor %}
+    {#<b>Room</b>#}
+    {#    {{ rooms }}#}
+    {#    {% for f in rooms %}#}
+    {#        <div style="" class="fs ms-2 rounded-left my-1 d-lg-flex d-sm-block  justify-content-start align-items-center  col-lg-12 col-sm-2">#}
+    {##}
+    {#            {% if request.user.username in f.user.all %}#}
+    {#                {{ f.id }}#}
+    {#            {% endif %}#}
+    {#                <a href="{% url 'chat' f.pk %}"><span class="mx-2">{%  for i in f.user.all %}{% if i.username != request.user.username %}{{ i.username }}{% endif %}{% endfor %}</span></a>#}
+    {##}
+    {#        </div>#}
+    {##}
+    {#    {% endfor %}#}
+
+    <br>
+    {#    <div style="height: 200px;border-radius:100px 100px 0px 0px;" class="col-2 bg-primary" >#}
+    {#        hello#}
+    {#    </div>#}
+
+
+
+
+{% endblock %}

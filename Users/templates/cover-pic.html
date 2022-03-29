@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="post" enctype="multipart/form-data">
+    {%  csrf_token %}
+    <input  name="cover-photo" type="file">
+    <input type="submit" name="upload_cover_photo">
+</form>
+</body>
+</html>

@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cloudinary %}
+{% block menu %}
+
+
+    <div class="d-flex justify-content-center align-items-center p-4 mt-2 rounded profile-card" style="background-image:url({% if object.cover_picture %} '{{ object.cover_picture.url }}' {% else %} '{% static 'image/no_cover_pic.png' %}'{% endif %} )">
+        {% if object.profilepicture %}
+
+            <img style="clip-path: circle();"
+                 class="profile_img img-responsive img-fluid img border border-white rounded-circle  "
+                 src="{{ object.profilepicture.url }}">
+            {% else %}
+            <img style="clip-path: circle();"
+                 class="profile_img img-responsive img-fluid img border border-white rounded-circle  " src="{% static 'image/no_pic.png' %}">
+
+        {% endif %}
+    </div>
+    <div class="d-flex justify-content-center align-items-center rounded border border-dark bg-primary text-white text-center p-1 mt-1">
+        <h5 class="title font-weight-bolder text-uppercase">{{ object.user.username }}</h5>
+    </div>
+    <br>
+    <div class="">
+
+        {% if  object not in connections and object.user != request.user %}
+            {#        {% if i. %}#}
+
+            <a class="btn btn-outline-primary" href="{% url 'networks:addfriend' object.pk %}">Add friend</a>
+        {% else %}
+            {% if object.user == request.user %}
+                <a class="btn btn-outline-primary " href="{% url 'profile-photo' object.pk %}">Upload Profile photo</a>
+                <a class="btn btn-outline-primary " href="{% url 'cover-photo' object.pk %}">Upload cover photo</a>
+            {% endif %}
+        {% endif %}
+
+        {% if object.user == c.profiles.user %}
+            {% if c.request_for_connection == False %}
+
+                <a class="btn btn-outline-primary" href="{% url 'networks:accept_request' c.profiles.pk %}">accept</a>
+
+            {% else %}
+                cancel request
+            {% endif %}
+        {% endif %}
+
+    </div>
+    <br>
+
+    <!-- menu navbar start -->
+    <div class="other-section">
+        <!-- navar -->
+        <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+            <li class="nav-item">
+                <a data-bs-toggle="tab" class="nav-link active" href="#home">About</a>
+            </li>
+            <li class="nav-item ">
+                <a data-bs-toggle="tab" class="nav-link" href="#contact">Contact</a>
+            </li>
+            <li class="nav-item ">
+                <a data-bs-toggle="tab" class="nav-link" href="#address">Address</a>
+            </li>
+        </ul>
+        <!-- navbar end -->
+
+        <!-- menu navbar content start-->
+        <div class="tab-content bg-white p-3 mb-2" id="nav-tabContent">
+            <div id="home" class="tab-pane active text-dark">
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Education</h5>
+                </div>
+                <blockquote class="text-center text-dark text-justify text-muted">
+                    {% if gs.Graduate_school_name != None %}
+                        {% if  gs.end < gs.current_date %}Studied at {% else %} Studies
+                            at {% endif %}{{ gs.Graduate_school_name }}
+                        <br>
+                        {% if object.user == request.user %}<a href="{% url 'edit_graduate_schhol' gs.pk %}">edit</a>
+                        {% else %}University is not added{% endif %}
+
+                    {% else %}
+                        {% if object.user == request.user %}
+                            <a href="{% url 'edit_graduate_schhol' gs.pk %}">add University</a>{% else %}University is
+                            not added{% endif %}
+
+                    {% endif %}
+
+                    <br>
+                    {% if cl.college != None %}
+                        {% if  cl.end < cl.current_date %}Studied at {% else %} Studies at {% endif %}{{ cl.college }}
+                        <br>
+                        {% if object.user == request.user %}<a href="{% url 'edit_college' cl.pk %}">edit</a>{% else %}
+                            College is not added{% endif %}
+
+                    {% else %}
+                        {% if object.user == request.user %} <a href="{% url 'edit_college' cl.pk %}">add college</a>
+                        {% else %}College is not added{% endif %}
+
+                    {% endif %}
+                    <br>
+                    {% if s.school != None %}
+                        {% if  s.end < s.current_date %}Studied at {% else %} Studies at {% endif %}{{ s.school }}
+                        <br>
+                        {% if object.user == request.user %}<a href="{% url 'edit_school' s.pk %}">edit</a>{% else %}
+                            School is not added{% endif %}
+
+                    {% else %}
+                        {% if object.user == request.user %}<a href="{% url 'edit_school' s.pk %}">add school</a>
+                        {% else %}School is not added{% endif %}
+
+                    {% endif %}
+                </blockquote>
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">profession</h5>
+                </div>
+                <blockquote class="text-center text-dark text-justify text-muted">
+                    {% if job.profession != None %}
+
+                        works at {{ job.company }} as a {{ job.profession }}
+                        {% if object.user == request.user %}
+                            <a href="{% url 'edit_proffession' job.pk %}">edit</a>
+                        {% endif %}
+                    {% else %}
+                        {% if object.user == request.user %}
+                            <a href="{% url 'edit_proffession' job.pk %}">add proffession</a>{% else %}Job is not added
+                        {% endif %}
+
+                    {% endif %}
+
+                </blockquote>
+            </div>
+            <div id="contact" class="text-center tab-pane fade text-dark">
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Contact</h5>
+                </div>
+
+                {% if object.contact %}
+                    <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top"
+                            title="{{ object.contact }}">
+                        <i style="font-size:15px" class="fa">&#xf095;</i>
+                        {#                    <i class="fa-brands fa-whatsapp"></i>#}
+                    </button>
+                    {#                <p class="text-muted "><i style="font-size:15px" class="fa">&#xf095;</i> : {{ object.contact }}</p>#}
+
+                {% endif %}
+                {% if object.user.email %}
+                    <button type="button" class="btn btn-outline-danger" data-toggle="tooltip" data-placement="top"
+                            title="{{ object.user.email }}">
+                        <i class="fa-regular fa-envelope"></i>
+                        {#                    <i class="fa-brands fa-whatsapp"></i>#}
+                    </button>
+
+                    {#                    <p class="text-muted"><i style="font-size:15px" class="fa">&#xf0e0;</i> : {{ object.user.email }}</p>#}
+
+                {% endif %}
+                <br>
+                {% if object.user == request.user %}<a href="{% url 'edit_profile' object.pk %}">edit</a>{% endif %}
+
+
+
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Social Link</h5>
+                </div>
+                {% if link.Facebook %}
+                    <a style="text-decoration: none;" class="btn btn-outline-primary   m-1 font-weight-bold"
+                       href="{{ link.Facebook }}"><i class="fa-brands fa-facebook-square"></i></a>
+                {% endif %}
+                {% if link.Instragram %}
+                    <a style="text-decoration: none;" class="btn btn-outline-danger   m-1 font-weight-bold"
+                       href="{{ link.Instragram }}"><i style="" class="fab fa-instagram"></i></a>
+                {% endif %}
+                {% if link.Linkedin %}
+                    <a style="text-decoration: none;" class="btn btn-outline-primary m-1 font-weight-bold"
+                       href="{{ link.Linkedin }}"><i class="fab fa-linkedin-in"></i></a>
+                {% endif %}
+                {% if link.Twitter %}
+                    <a style="text-decoration: none;" class="btn btn-outline-secondary m-1  font-weight-bold"
+                       href="{{ link.Twitter }}"><i class="fa-brands fa-twitter"></i></a>
+                {% endif %}
+                {% if link.Github %}
+                    <a style="text-decoration: none;" class="btn btn-outline-dark m-1  font-weight-bold"
+                       href="{{ link.Github }}"><i class="fa-brands fa-github"></i></a>
+                {% endif %}
+            </div>
+            <div id="address" class=" text-center tab-pane fade text-dark">
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Home Address</h5>
+                </div>
+                <blockquote class=" text-center text-dark text-justify text-muted">
+                    {% if object.address %}
+                        <p><i style="color:cornflowerblue;"
+                              class="fa-solid fa-location-dot mx-1"></i>{{ object.address }}</p>
+                    {% else %}
+                        pressent address is not added
+                    {% endif %}
+
+                </blockquote>
+                <div class="title text-center text-dark pt-2">
+                    <h5 class="font-weight-bolder text-uppercase">Permanant Address</h5>
+                </div>
+                <blockquote class="text-center text-dark text-justify text-muted">
+
+                    {% if object.Home %}
+                        <p><i style="color:cornflowerblue;" class="fa-solid fa-location-dot mx-1"></i>{{ object.Home }}
+                        </p>
+                    {% else %}
+                        permanant address is not added
+                    {% endif %}
+                    {% if object.user == request.user %}
+                        <a href="{% url 'edit_address' object.pk %}"> add or edit</a>
+                    {% endif %}
+
+
+                </blockquote>
+            </div>
+        </div>
+        <!-- menu navbar content end-->
+    </div>
+    <!-- menu navbar end -->
+
+{% endblock %}
+{% block content %}
+    {% if object.user.post_set.all %}
+        {% for s in object.user.post_set.all|dictsortreversed:"updated_at" %}
+            <div class="card my-2">
+                <!-- card header start -->
+                <div class="card header ">
+                    <div class="d-flex justify-content-start align-items-center p-1">
+                        <!-- icon -->
+                        {% if s.user.profile.profilepicture.url %}
+                            <img style="float:left;height:7%;width:7%;clip-path: circle()"
+                                 class="img-responsive mx-2 mt-1 rounded-circle col-lg-2 img-fluid"
+                                 src="{{ s.user.profile.profilepicture.url }}">
+                            {% else %}
+                            <img  style="float:left;height:7%;width:7%;clip-path: circle()"
+                                  class="img-responsive mx-2 mt-1 rounded-circle col-lg-2 img-fluid" src="{% static 'image/no_pic.png' %}">
+                            <!-- icon brand -->
+                        {% endif %}
+                        <div>
+                            <a style="text-decoration: none"
+                               href="{{ s.user.profile.get_absolute_url }}">{{ s.user.username }}</a>
+
+                            <small class="d-block text-muted text-dark">{{ s.created_at|timesince }}</small>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p> {{ s.status }}
+                    </p>
+                    {% if s.post_image %}
+{#                        <img src="{{ s.post_image.url }}" class="d-block m-auto img-fluid post-img">#}
+                        {% cloudinary s.post_image format="jpg" class="d-block m-auto img-fluid post-img" %}
+                    {% endif %}
+                </div>
+                <!-- card body end -->
+                <!-- card footer start -->
+                <div class="bg-white card-footer">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row p-0">
+                            <div class="col-6">
+                                <a href="{% url 'react' s.pk %}"
+                                   class="rounded-pill me-1 btn btn-light col-12
+
+
+
+                                           {% for j in s.post_reaction_set.all %}{% for k in j.reaction_set.all %}{% if k.user == request.user %}text-primary{% else %}text-dark{% endif %}{% endfor %}{% endfor %}">
+                                    {% for k in s.post_reaction_set.all %}{{ k.total_react }} {% endfor %}
+                                    <i style="font-size: 20px;" class="fa fa-thin fa-thumbs-up"></i></a>
+                            </div>
+                            <div class="col-6">
+
+                                <a href="{% url 'create_comment' s.pk %}"
+                                   class="rounded-pill me-1 btn btn-light col-12">
+                                    <i style="font-size: 20px;" class="text-muted fa-solid fa-envelope"></i></a>
+
+                            </div>
+{#                            <div class="col-4">#}
+{#                                <button class="rounded-pill me-1 btn btn-light col-12"#}
+{#                                        data-bs-toggle="modal" data-bs-target="#statusModal"><i style="font-size: 15px;"#}
+{#                                                                                                class="text-muted fa-solid fa-share"></i>#}
+{#                                </button>#}
+{#                            </div>#}
+                        </div>
+                    </form>
+                </div>
+                <!-- card footer end -->
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="mt-4 card text-muted text-center bg-light p-4"> No Posts yet</div>
+    {% endif %}
+{% endblock %}
+{% block aside %}
+    {% for f in friends %}
+
+        <div class="dropdown-container fs ms-2 rounded-left my-1 d-lg-flex d-sm-block  justify-content-start align-items-center  col-lg-12 col-sm-2">
+
+            {% if f.profile.profilepicture %}
+                <a class="" href="#">
+                    <img src="{{ f.profile.profilepicture.url }}" class=" border border-white rounded-circle img-fluid chat_img">
+                    <span class="mx-2"><a href="{% url 'chat' f.pk %}" class="text-decoration-none">{{ f.username }}</a></span>
+                </a>
+                <div style="" class="bg-light  justify-content-center align-items-center dropdown-content">
+                    <img src="{{ f.profile.profilepicture.url }}"
+                         class=" border border-white rounded-circle img-fluid chat_img">
+                    <span class="mx-2"><a href="{% url 'profile' f.pk %}" class="text-decoration-none">{{ f.username }}</a></span>
+                    {% for j in f.profile.profession_set.all %}{% if j.profession %}{{ j.profession }}{% endif %}{% endfor %}
+                </div>
+
+
+            {% else %}
+                <a class="" href="#" data-bs-toggle="dropdown">
+                    <img src="{% static 'image/no_pic.png' %}" class=" border border-white rounded-circle img-fluid chat_img">
+                <span class="mx-2 "><a href="{% url 'chat' f.pk %}" class="text-decoration-none">{{ f.username }}</a></span>
+                </a>
+                <div class="dropdown-content">
+                    <img src="{% static 'image/no_pic.png' %}"
+                         class=" border border-white rounded-circle img-fluid chat_img">
+                    <span class="mx-2"><a href="{% url 'profile' f.pk %}"
+                                          class="text-decoration-none">{{ f.username }}</a></span>
+                </div>
+
+            {% endif %}
+        </div>
+
+    {% endfor %}
+{% endblock %}

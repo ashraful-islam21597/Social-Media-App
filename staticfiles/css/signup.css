@@ -1,0 +1,13 @@
+*{
+    box-sizing: border-box;
+    padding:0;
+    margin: 0;
+}
+.icon{
+    border-radius: 50%;
+}
+@media only screen and (max-width: 600px) {
+    .icon{
+        display: none;
+    }
+}

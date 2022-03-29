@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block menu %}
+    <br>
+    <div class="other-section ">
+        <!-- navar -->
+        <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+            <li class="nav-item">
+                <a data-bs-toggle="tab" class="nav-link active" href="#about">Friend requests</a>
+            </li>
+            <li class="nav-item ">
+                <a data-bs-toggle="tab" class="nav-link" href="#contact">Friends</a>
+            </li>
+            <li class="nav-item ">
+                <a data-bs-toggle="tab" class="nav-link" href="#education">Suggestion</a>
+            </li>
+
+        </ul>
+        <!-- navbar end -->
+
+        <!-- menu navbar content start-->
+        <div style="padding-bottom: 10%;" class="tab-content bg-white  mb-5" id="nav-tabContent">
+                <div id="about" class="tab-pane active text-dark">
+                    <!-- about start -->
+                    {% for j  in connection %}
+                        {% if j.connected == 0 and j.sent_request_for_connection == 1 %}
+
+{#                            <div class="bg-light card">{{ i.profiles.user.username }}</div>#}
+
+                            <div class="bg-light card my-2">
+                                <div class="card-header">
+                                    {% if j.profiles.profilepicture %}
+                                        <img class="rounded-circle me-2" src="{{ j.profiles.profilepicture.url }}"
+                                             style="height:30px;width:30px "
+                                        >
+                                    {% endif %}
+                                    <b class="">{{ j.profiles.user.username }}</b>
+                                </div>
+                                <div class="card-body">
+                                    <span>
+                                    </span>
+
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{% url 'networks:accept_request' j.pk %}" class="btn btn-outline-primary">Accept</a>
+                                </div>
+
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                    <!-- contact start -->
+                <div id="contact" class="tab-pane fade text-dark">
+
+                    {% for i in users %}
+
+                        {% if i not in l or i.network.user not in l1 %}
+                            {%if i.user.username != request.user.username %}
+                                <div class="bg-light card my-2">
+                                    <div class="card-header">
+                                        {% if i.profilepicture %}
+                                            <img class="rounded-circle me-2" src="{{ i.profilepicture.url }}"
+                                                 style="height:30px;width:30px "
+                                            >
+                                        {% endif %}
+                                        <b class=""><a href="{{ i.get_absolute_url }}">{{ i.user.username }}</a></b>
+                                    </div>
+                                    <div class="card-body">
+                                        <span>
+                                            {% for t in l3 %}
+                                                {% if i != t %}
+                                                    {% for  t1 in i.customuser_set.all  %}
+                                                    {{ t1.username }}
+                                                    {% endfor %}
+                                                    {{ t }}
+
+                                                {% endif %}
+
+                                        {% endfor %}</span>
+
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="{% url 'networks:addfriend' i.pk %}" class="btn btn-outline-primary">add friend</a>
+                                    </div>
+
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+
+
+                    {% endfor %}
+                    {% for i in connection %}
+
+                        {% for j in i.profiles_set.all %}
+                            {{ j }}
+                            {% endfor %}
+                    {% endfor %}
+                </div>
+                    <!-- contact end -->
+
+                    <!-- address start -->
+                <div id="education" class="tab-pane fade  text-dark">
+                    <p>3.Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                </div>
+                    <!-- address end -->
+
+        </div>
+    </div>
+        <!-- menu navbar content end-->
+
+{% endblock %}
+{% block content %}
+    {% for i in requests.connection_set.all %}
+        {% if i.connected == 0 %}
+            <div class="bg-light card"><a href="{{ i.profiles.get_absolute_url }}">{{ i.profiles.user.username }}</a></div>
+        {% endif %}
+    {% endfor %}
+    {% for t in l3 %}
+        {{ i }}
+
+    {% endfor %}
+{% endblock %}

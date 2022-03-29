@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<strong>Profiles</strong>
+{% for i in search_profile %}
+    <div class="d-lg-flex d-sm-block  justify-content-start align-items-center bg-light card p-2 my-2">
+    <img src="{{ i.profilepicture.url }}" class="  vimg-responsiveborder border-white rounded-circle img-fluid chat_img">
+    <a href="{{ i.get_absolute_url }}">{{ i.user.username }}</a>
+    </div>
+{% endfor %}
+<strong>posts</strong>
+{% for s in search_post %}
+    <div class="card my-2">
+        <!-- card header start -->
+        <div class="card header ">
+            <div class="d-flex justify-content-start align-items-center p-1">
+                <!-- icon -->
+                {% if s.user.profile.profilepicture.url %}
+                    <img style="float:left;height:7%;width:7%; clip-path: circle();"
+                         class="img-responsive mx-2 mt-1 rounded-circle col-lg-2 img-fluid"
+                         src="{{ s.user.profile.profilepicture.url }}">
+                    <!-- icon brand -->
+                {% endif %}
+                <div>
+                    <a style="text-decoration: none"
+                       href="{{ s.user.profile.get_absolute_url }}">{{ s.user.username }}</a>
+
+                    <small class="d-block text-muted text-dark">{{ s.created_at|timesince }}</small>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <p> {{ s.status }}
+            </p>
+            {% if s.post_image %}
+                <img src="{{ s.post_image.url }}" class=" d-block  m-auto img-fluid post-img">
+            {% endif %}
+        </div>
+        <!-- card body end -->
+        <!-- card footer start -->
+        <div class="bg-white card-footer">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row p-0">
+                    <div class="col-6">
+                        <a href="{% url 'react' s.pk %}"
+                           class="rounded-pill me-1 btn btn-light col-12
+
+
+                                       {% for j in s.post_reaction_set.all %}{% for k in j.reaction_set.all %}{% if k.user == request.user %}text-primary{% else %}text-dark{% endif %}{% endfor %}{% endfor %}">
+                            {% for k in s.post_reaction_set.all %}{{ k.total_react }} {% endfor %}
+                            <i style="font-size: 20px;" class="fa fa-thin fa-thumbs-up"></i>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        {#                            <a class="rounded-pill me-1 btn btn-light col-12"#}
+                        {#                                    data-bs-toggle="modal" data-bs-target="#commentModal">comment#}
+                        {#                            </a>#}
+                        <a href="{% url 'create_comment' s.pk %}" class="rounded-pill me-1 btn btn-light col-12">
+                            <i style="font-size: 20px;" class="text-muted fa-solid fa-envelope"></i>
+                        </a>
+                    </div>
+                    {#                        <div class="col-4">#}
+                    {#                            <button class="rounded-pillme-1 btn btn-light col-12"#}
+                    {#                                    data-bs-toggle="modal" data-bs-target="#statusModal"><i style="font-size: 15px;"#}
+                    {#                                                                                            class="text-muted fa-solid fa-share"></i>#}
+                    {#                            </button>#}
+                    {#                        </div>#}
+                </div>
+            </form>
+        </div>
+        <!-- card footer end -->
+
+    </div>
+
+{% endfor %}
+
+{% endblock %}
